@@ -43,7 +43,7 @@ function ChatMessage({ message }) {
 
   return (
     <MessageContainer currentUserMessage={currentUserMessage}>
-      <ProfileImage src={photoURL} />
+      <ProfileImage src={photoURL} referrerPolicy="no-referrer" />
       <MessageText>{text}</MessageText>
       {image.length ? <img src={image} /> : <></>}
     </MessageContainer>

@@ -21,21 +21,21 @@ function ChatRoom({ user }) {
   const sendMessage = async (event) => {
     const { uid, photoURL } = auth.currentUser;
     let imagePath = "";
-
-    const fileImage = event.target.files[0];
-
-    if (fileImage) {
+    console.log(photoURL);
+    if (event?.target?.files[0]) {
+      let fileImage = event.target.files[0];
       // create ref, randomize filename
       const imageRef = storage.ref(`images/${fileImage.name + v4()}`);
       const uploadResult = await uploadBytes(imageRef, fileImage);
       imagePath = uploadResult.metadata.name;
     }
+
     messagesRef.add({
       text: formValue,
       createdAt: firebase.firestore.FieldValue.serverTimestamp(),
       uid,
       photoURL,
-      userImageURL: imagePath,
+      userImageURL: imagePath || null,
     });
 
     // reset values
@@ -44,8 +44,13 @@ function ChatRoom({ user }) {
   };
 
   return (
-    <>
-      <Container>
+    <div style={{ display: "flex", flexDirection: "column" }}>
+      <Container
+        style={{
+          overflow: "auto",
+          height: "80vh",
+        }}
+      >
         {messages &&
           messages.map((msg, idx) => {
             return <ChatMessage message={msg} key={idx} />;
@@ -61,9 +66,13 @@ function ChatRoom({ user }) {
       >
         <div
           style={{
-            display: "flex",
-            flex: 1,
+            height: "10vh",
+            position: "fixed",
+            bottom: 0,
             width: "100%",
+            "maxWidth": "100%",
+            display: "flex",
+            fontSize: "1.5rem",
           }}
         >
           <input
@@ -73,7 +82,7 @@ function ChatRoom({ user }) {
             onChange={(e) => setFormValue(e.target.value)}
             type={"text"}
           />
-          <button style={{ flexGrow: 1 }} onClick={sendMessage}>
+          <button style={{ flexGrow: 1 }} onClick={(e) => sendMessage()}>
             Send
           </button>
           <input
@@ -87,7 +96,7 @@ function ChatRoom({ user }) {
           ></input>
         </div>
       </div>
-    </>
+    </div>
   );
 }
 
