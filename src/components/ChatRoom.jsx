@@ -18,15 +18,17 @@ function ChatRoom({ user }) {
   // listen to messages received
   const [messages] = useCollectionData(query, { idField: "id" });
 
-  const sendMessage = async (event) => {
+  const sendMessage = async () => {
     const { uid, photoURL } = auth.currentUser;
+
+    if(!formValue && !imageValue) return;
+
     let imagePath = "";
-    console.log(photoURL);
-    if (event?.target?.files[0]) {
-      let fileImage = event.target.files[0];
+
+    if (imageValue) {
       // create ref, randomize filename
-      const imageRef = storage.ref(`images/${fileImage.name + v4()}`);
-      const uploadResult = await uploadBytes(imageRef, fileImage);
+      const imageRef = storage.ref(`images/${imageValue.name + v4()}`);
+      const uploadResult = await uploadBytes(imageRef, imageValue);
       imagePath = uploadResult.metadata.name;
     }
 
@@ -44,10 +46,9 @@ function ChatRoom({ user }) {
   };
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div style={{ display: "flex", flexDirection: "column", overflow: "auto" }}>
       <Container
         style={{
-          overflow: "auto",
           height: "80vh",
         }}
       >
@@ -70,7 +71,7 @@ function ChatRoom({ user }) {
             position: "fixed",
             bottom: 0,
             width: "100%",
-            "maxWidth": "100%",
+            maxWidth: "100%",
             display: "flex",
             fontSize: "1.5rem",
           }}
@@ -91,8 +92,7 @@ function ChatRoom({ user }) {
             id="image"
             name="image"
             accept="image/*"
-            value={imageValue}
-            onChange={(e) => setImageValue(e.target.value)}
+            onChange={(e) => setImageValue(e.target.files[0])}
           ></input>
         </div>
       </div>
